@@ -1,0 +1,7 @@
+<!-- File: res/values-bs/strings.xml -->
+<resources>
+    <string name="app_name">Bookish</string>
+    <string name="search_by_title">Pretraži po naslovu</string>
+    <string name="search">Pretraži</string>
+    <string name="book_cover">Naslovnica knjige</string>
+</resources>
