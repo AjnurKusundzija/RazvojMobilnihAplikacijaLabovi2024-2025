@@ -1,0 +1,1 @@
+Bookish projekat za laboratorijske vježbe kursa Razvoj mobilnih aplikacija 2024/2025.
