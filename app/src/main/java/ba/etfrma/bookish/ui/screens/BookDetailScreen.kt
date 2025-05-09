@@ -1,0 +1,136 @@
+package ba.etfrma.bookish.ui.screens
+
+import android.app.SearchManager
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import ba.etfrma.bookish.R
+import ba.etfrma.bookish.model.Book
+import ba.etfrma.bookish.repositories.BookRepository
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+
+@Composable
+fun BookDetailsScreen(id: String, onBack: () -> Unit) {
+    val context = LocalContext.current
+    var book by remember { mutableStateOf<Book?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(id) {
+        isLoading = true
+        book = BookRepository.getBookById(id)
+        isLoading = false
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator()
+        } else {
+            book?.let {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(it.thumbnail)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.books),
+                    error = painterResource(R.drawable.books),
+                    contentDescription = "Book cover",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth()
+                )
+                Text(
+                    text = it.title,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            try {
+                                val query = "${it.title} ${it.authors.joinToString(" ")}"
+                                val intent = Intent(Intent.ACTION_WEB_SEARCH).apply {
+                                    putExtra(SearchManager.QUERY, query)
+                                }
+                                context.startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                e.printStackTrace()
+                            }
+                        },
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    "Authors: ${it.authors.joinToString(", ")}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text("Publisher: ${it.publisher}", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    "Categories: ${it.categories.joinToString(", ")}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Text(
+                    text = it.infoLink,
+                    color = Color.Blue,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.clickable {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.infoLink))
+                            context.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            e.printStackTrace()
+                        }
+                    }
+                )
+
+                Text(
+                    text = it.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.clickable {
+                        try {
+                            val intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, it.description)
+                                type = "text/plain"
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share via"))
+                        } catch (e: ActivityNotFoundException) {
+                            e.printStackTrace()
+                        }
+                    }
+                )
+            } ?: Text("Greška: Knjiga nije pronađena.")
+
+            }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { onBack() }) {
+            Text("Back")
+        }
+    }
+}
