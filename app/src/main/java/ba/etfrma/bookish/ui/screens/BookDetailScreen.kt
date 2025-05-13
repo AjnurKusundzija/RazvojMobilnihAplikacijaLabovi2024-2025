@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ba.etfrma.bookish.R
 import ba.etfrma.bookish.model.Book
-import ba.etfrma.bookish.repositories.BookRepository
+
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
@@ -37,7 +37,7 @@ fun BookDetailsScreen(id: String, onBack: () -> Unit) {
 
     LaunchedEffect(id) {
         isLoading = true
-        book = BookRepository.getBookById(id)
+        book = BookRepository.getBookDetails(id)
         isLoading = false
     }
 

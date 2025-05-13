@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ba.etfrma.bookish.data.BookStaticData
 import ba.etfrma.bookish.model.Book
-import ba.etfrma.bookish.repositories.BookRepository
+
 import ba.etfrma.bookish.ui.components.BookCard
 import kotlinx.coroutines.launch
 
