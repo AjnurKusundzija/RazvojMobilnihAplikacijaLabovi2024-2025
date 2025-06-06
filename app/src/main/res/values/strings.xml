@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name" translatable="false">Bookish</string>
+    <string name="search_button">Search</string>
+    <string name="search_title">Search by title</string>
+</resources>
